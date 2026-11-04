@@ -1,5 +1,13 @@
 import java.util.*;
 
+class DivideByZeroException extends Exception
+{
+    DivideByZeroException(String message)
+    {
+        super(message);
+    }
+}
+
 class GuardedCalculator
 {
     public static void main(String[] args)
@@ -25,7 +33,7 @@ while (!success)
 
                 if (n2 == 0 && op.equals("/"))
                 {
-                    throw new ArithmeticException( "Error: Cannot divide by zero");
+                    throw new DivideByZeroException( "Error: Cannot divide by zero");
                 }
 
                 double result;
@@ -48,13 +56,17 @@ while (!success)
                 System.out.println("invalid no ");
             }
             
-    catch (ArithmeticException e)
+    catch (DivideByZeroException e)
             {
                 System.out.println(e.getMessage());
             }
 catch (IllegalArgumentException e)
             {
                 System.out.println(e.getMessage());
+            }
+finally
+            {
+                System.out.println("Attempt " + attempt + " logged");
             }
         }
 

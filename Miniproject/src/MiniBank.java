@@ -10,49 +10,71 @@ enum MenuOption {
 
 public class MiniBank {
 
-    public static void testAccounts() {
+    
+public static void testAccounts()
+{
+    Account[] accounts = {
+        new SavingsAccount("Aadya", 5000, 1000),
+        new CurrentAccount("Riya", 3000, 2000),
+        new FixedDepositAccount("Aman", 10000)
+    };
 
-        Account[] accounts = {
-            new Account("Aadya", 5000),
-            new Account("Riya", 3000),
-            new Account("Aman")
-        };
+    System.out.println("----- Account Details -----");
 
-        accounts[0].deposit(2000);
-        accounts[1].withdraw(1000);
-        accounts[2].deposit(4000);
-
-        System.out.println("----- Account Details -----");
-
-        for (Account a : accounts) {
-            System.out.println(a.toString());
-        }
-
-        System.out.println("\nComparing Accounts:");
-
-        System.out.println("Account 1 equals Account 2: "
-                + accounts[0].equals(accounts[1]));
-
-        Object obj = accounts[0];
-
-        if (obj instanceof Account) {
-            System.out.println("Object is an Account");
-        }
-
-        Customer customer = new Customer(
-                "Aadya", "aadya@example.com", "9876543210"
-        );
-
-        customer.setAddress(
-                new Customer.Address("Main Road", "Ahmedabad", "380001")
-        );
-
-        Customer copiedCustomer = customer.clone();
-
-        System.out.println("Customer: " + customer.getName());
-        System.out.println("City: " + customer.getAddress().getCity());
-        System.out.println("Cloned Customer: " + copiedCustomer.getName());
+    for (Account a : accounts)
+    {
+        System.out.println(a);
+        System.out.println("Interest Rate: " + a.interestRate() + "%");
+        System.out.println();
     }
+
+    accounts[0].deposit(2000);
+
+    System.out.println("Savings withdrawal: "
+            + accounts[0].withdraw(1000));
+
+    System.out.println("Current withdrawal: "
+            + accounts[1].withdraw(4000));
+
+    System.out.println("Fixed Deposit withdrawal: "
+            + accounts[2].withdraw(1000));
+
+    System.out.println("\nUpdated Balances:");
+
+    for (Account a : accounts)
+    {
+        System.out.println(a.getOwnerName() + ": " + a.getBalance());
+    }
+
+    if (accounts[0] instanceof SavingsAccount s)
+    {
+        System.out.println("Minimum Balance: " + s.getMinBalance());
+    }
+
+    System.out.println("Account 1 equals Account 2: "
+            + accounts[0].equals(accounts[1]));
+
+    Object obj = accounts[0];
+
+    if (obj instanceof Account)
+    {
+        System.out.println("Object is an Account");
+    }
+
+    Customer customer = new Customer(
+        "Aadya", "aadya@example.com", "9876543210"
+    );
+
+    customer.setAddress(
+        new Customer.Address("Main Road", "Ahmedabad", "380001")
+    );
+
+    Customer copiedCustomer = customer.clone();
+
+    System.out.println("Customer: " + customer.getName());
+    System.out.println("City: " + customer.getAddress().getCity());
+    System.out.println("Cloned Customer: " + copiedCustomer.getName());
+}
 
     public static void testValidation() {
 
@@ -88,8 +110,7 @@ public class MiniBank {
 
         System.out.println("\n----- Statement Test -----");
 
-        Account account = new Account("Aadya", 5000);
-
+        Account account = new SavingsAccount("Aadya", 5000, 1000);
         System.out.println(StatementFormatter.buildStatement(account));
     }
 
