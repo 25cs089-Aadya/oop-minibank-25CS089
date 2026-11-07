@@ -54,7 +54,7 @@ public abstract class Account implements Transactable, InterestBearing
     }
 
     @Override
-    public void deposit(long amount) throws InvalidAmountException
+    public synchronized void deposit(long amount) throws InvalidAmountException
     {
         if (amount <= 0)
         {
@@ -65,7 +65,7 @@ public abstract class Account implements Transactable, InterestBearing
     }
 
     @Override
-    public boolean withdraw(long amount) throws InsufficientFundsException, InvalidAmountException
+    public synchronized boolean withdraw(long amount) throws InsufficientFundsException, InvalidAmountException
     {
         if (amount <= 0)
         {
@@ -79,6 +79,14 @@ public abstract class Account implements Transactable, InterestBearing
 
         balance -= amount;
         return true;
+    }
+
+    // not synchronized on purpose, only used to show the race condition
+    public void depositWithoutLock(long amount)
+    {
+        long current = balance;
+        Thread.yield();
+        balance = current + amount;
     }
 
     public void transfer(Account to, long amount) throws BankException
