@@ -14,3 +14,9 @@ data/
 # OS files
 .DS_Store
 Thumbs.db
+out-test/
+lib/
+*.jar
+manifest.txt
+stages/
+apply_stages.ps1
