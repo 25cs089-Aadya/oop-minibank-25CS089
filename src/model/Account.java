@@ -33,6 +33,17 @@ public abstract class Account implements Transactable, InterestBearing, Serializ
         return String.format("AC%04d", accountCounter);
     }
 
+    // after loading saved accounts, continue numbering from the highest one
+    public static void updateCounter(String accountNumber)
+    {
+        long n = Long.parseLong(accountNumber.substring(2));
+
+        if (n > accountCounter)
+        {
+            accountCounter = n;
+        }
+    }
+
     public Account(String ownerName, long openingBalance)
     {
         this.accountNumber = generateAccountNumber();
