@@ -1,4 +1,5 @@
 package model;
+
 public class FixedDepositAccount extends Account implements Premium
 {
     public FixedDepositAccount(String name, long balance)

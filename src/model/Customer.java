@@ -1,4 +1,5 @@
 package model;
+
 public class Customer implements Cloneable
 {
     private String name;
@@ -18,7 +19,7 @@ public class Customer implements Cloneable
 
     public static class Address
     {
-        private String line;
+            private String line;
         private String city;
         private String pincode;
 

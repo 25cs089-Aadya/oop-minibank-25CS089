@@ -1,5 +1,7 @@
-  package util;
-    import model.*;
+package util;
+
+import model.*;
+
 public class StatementFormatter
 {
     public static String buildStatement(Account account)
