@@ -4,6 +4,9 @@ import exception.*;
 import model.*;
 import util.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import static util.Validator.isValidMobile;
 
 // runs the demo for each practical, e.g. java -cp out service.LabDemos 8
@@ -20,6 +23,7 @@ public class LabDemos {
         if (lab == 0 || lab == 8) testExceptions();
         if (lab == 0 || lab == 9) testThreads();
         if (lab == 0 || lab == 10) testThreadPool();
+        if (lab == 0 || lab == 11) testFiles();
     }
 
     public static void testAccounts() throws Exception {
@@ -335,5 +339,34 @@ public class LabDemos {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    public static void testFiles() throws Exception {
+        System.out.println("\n--- Files ---");
+
+        Path folder = Path.of("data", "demo");
+        Path file = folder.resolve("accounts.dat");
+        Path logs = folder.resolve("logs");
+
+        Account[] accounts = {
+            new SavingsAccount("Aadya", 5000, 1000),
+            new CurrentAccount("Riya", 2000, 1000),
+            new FixedDepositAccount("Aman", 9000)
+        };
+
+        StatePersister.save(accounts, file);
+        Account[] loaded = StatePersister.load(file);
+
+        System.out.println("Reloaded accounts:");
+        for (Account a : loaded) {
+            System.out.println(a);
+        }
+
+        Files.deleteIfExists(logs.resolve("day1.log"));
+        TransactionLog.append(logs.resolve("day1.log"), "DEPOSIT AC0001 500");
+        TransactionLog.append(logs.resolve("day1.log"), "WITHDRAW AC0002 200");
+        TransactionLog.append(logs.resolve("day1.log"), "DEPOSIT AC0003 1000");
+
+        System.out.println(ReportGenerator.generate(logs, folder.resolve("report.txt")));
     }
 }
