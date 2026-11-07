@@ -10,7 +10,7 @@ import model.annotation.Positive;
 import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class Account implements Transactable, InterestBearing, Serializable
+public abstract class Account implements Transactable, InterestBearing, Serializable, Comparable<Account>
 {
     private static final long serialVersionUID = 1L;
 
@@ -130,6 +130,12 @@ public abstract class Account implements Transactable, InterestBearing, Serializ
     public boolean isActive()
     {
         return active;
+    }
+
+    @Override
+    public int compareTo(Account other)
+    {
+        return accountNumber.compareTo(other.accountNumber);
     }
 
     @Override
