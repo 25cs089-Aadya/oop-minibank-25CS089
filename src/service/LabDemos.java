@@ -1,5 +1,6 @@
 package service;
 
+import exception.*;
 import model.*;
 import util.*;
 
@@ -16,6 +17,7 @@ public class LabDemos {
         if (lab == 0 || lab == 4) testValidation();
         if (lab == 0 || lab == 6) testInterfaces();
         if (lab == 0 || lab == 7) testAnnotations();
+        if (lab == 0 || lab == 8) testExceptions();
     }
 
     public static void testAccounts() throws Exception {
@@ -139,6 +141,43 @@ public class LabDemos {
         System.out.println("Errors for long name:");
         for (String e : AnnotationValidator.validate(longName)) {
             System.out.println("  " + e);
+        }
+    }
+
+    public static void testExceptions() {
+        System.out.println("\n--- Exceptions ---");
+
+        Account acc = new CurrentAccount("Aadya", 1000, 0);
+        Account other = new SavingsAccount("Riya", 2000, 500);
+
+        try {
+            acc.withdraw(5000);
+        } catch (InsufficientFundsException e) {
+            System.out.println("Withdrawal failed: short by " + e.getShortfall());
+        } catch (InvalidAmountException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            System.out.println("Balance is still " + acc.getBalance());
+        }
+
+        try {
+            acc.deposit(-50);
+        } catch (InvalidAmountException e) {
+            System.out.println("Deposit failed: " + e.getMessage());
+        }
+
+        try {
+            acc.transfer(other, 300);
+            acc.transfer(other, 9000);
+        } catch (BankException e) {
+            System.out.println("Caught in main: " + e.getMessage());
+        }
+
+        try (AuditSession session = new AuditSession("daily check")) {
+            System.out.println("Checking balances...");
+            other.withdraw(100000);
+        } catch (BankException e) {
+            System.out.println("Inside try-with-resources: " + e.getMessage());
         }
     }
 }

@@ -22,6 +22,12 @@ public class CurrentAccount extends Account
         return amount > 0 && getBalance() - amount >= -overdraftLimit;
     }
 
+    @Override
+    public long availableBalance()
+    {
+        return getBalance() + overdraftLimit;
+    }
+
     public long getOverdraftLimit()
     {
         return overdraftLimit;
