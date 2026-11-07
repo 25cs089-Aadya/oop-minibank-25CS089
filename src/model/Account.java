@@ -1,5 +1,8 @@
 package model;
 
+import exception.BankException;
+import exception.InsufficientFundsException;
+import exception.InvalidAmountException;
 import model.annotation.Id;
 import model.annotation.MaxLength;
 import model.annotation.Positive;
@@ -44,25 +47,57 @@ public abstract class Account implements Transactable, InterestBearing
 
     public abstract boolean canWithdraw(long amount);
 
-    @Override
-    public void deposit(long amount)
+    // how much can be taken out right now
+    public long availableBalance()
     {
-        if (amount > 0)
-        {
-            balance += amount;
-        }
+        return balance;
     }
 
     @Override
-    public boolean withdraw(long amount)
+    public void deposit(long amount) throws InvalidAmountException
     {
-        if (amount > 0 && canWithdraw(amount))
+        if (amount <= 0)
         {
-            balance -= amount;
-            return true;
+            throw new InvalidAmountException(amount);
         }
 
-        return false;
+        balance += amount;
+    }
+
+    @Override
+    public boolean withdraw(long amount) throws InsufficientFundsException, InvalidAmountException
+    {
+        if (amount <= 0)
+        {
+            throw new InvalidAmountException(amount);
+        }
+
+        if (!canWithdraw(amount))
+        {
+            throw new InsufficientFundsException(amount - availableBalance());
+        }
+
+        balance -= amount;
+        return true;
+    }
+
+    public void transfer(Account to, long amount) throws BankException
+    {
+        try
+        {
+            withdraw(amount);
+            to.deposit(amount);
+            System.out.println("Transferred " + amount + " from " + accountNumber + " to " + to.getAccountNumber());
+        }
+        catch (BankException e)
+        {
+            System.out.println("Transfer failed: " + e.getMessage());
+            throw e;
+        }
+        finally
+        {
+            System.out.println("Transfer attempt finished");
+        }
     }
 
     public String getAccountNumber()

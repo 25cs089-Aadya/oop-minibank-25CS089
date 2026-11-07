@@ -18,4 +18,10 @@ public class FixedDepositAccount extends Account implements Premium
     {
         return false;
     }
+
+    @Override
+    public long availableBalance()
+    {
+        return 0;
+    }
 }
