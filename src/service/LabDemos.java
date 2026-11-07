@@ -19,6 +19,7 @@ public class LabDemos {
         if (lab == 0 || lab == 7) testAnnotations();
         if (lab == 0 || lab == 8) testExceptions();
         if (lab == 0 || lab == 9) testThreads();
+        if (lab == 0 || lab == 10) testThreadPool();
     }
 
     public static void testAccounts() throws Exception {
@@ -208,6 +209,131 @@ public class LabDemos {
 
             System.out.println("Worker-1 state after join: " + threads[0].getState());
             System.out.println("Expected balance: 10000, Actual balance: " + acc.getBalance());
+        }
+    }
+
+    public static void testThreadPool() throws InterruptedException {
+        System.out.println("\n--- Thread Pool ---");
+
+        TransactionProcessor processor = new TransactionProcessor();
+        Account acc = new SavingsAccount("Aadya", 5000, 1000);
+        processor.addAccount(acc);
+
+        for (int i = 1; i <= 8; i++) {
+            String type = i % 2 == 0 ? "WITHDRAW" : "DEPOSIT";
+            processor.submit(CommandParser.parse(type + " " + acc.getAccountNumber() + " 200"));
+        }
+
+        processor.stop();
+        System.out.println("Balance after batch: " + acc.getBalance());
+
+        System.out.println("\n--- Producer Consumer ---");
+
+        TransactionBuffer buffer = new TransactionBuffer();
+        Account target = new SavingsAccount("Riya", 1000, 0);
+
+        Thread producer = new Thread(() -> {
+            try {
+                for (int i = 1; i <= 5; i++) {
+                    Command cmd = new Command(TransactionType.DEPOSIT, target.getAccountNumber(), i * 100);
+                    buffer.put(cmd);
+                    System.out.println("Produced deposit of " + cmd.amount());
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        Thread consumer = new Thread(() -> {
+            try {
+                for (int i = 1; i <= 5; i++) {
+                    Command cmd = buffer.take();
+                    target.deposit(cmd.amount());
+                    System.out.println("Consumed deposit of " + cmd.amount());
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (InvalidAmountException e) {
+                System.out.println(e.getMessage());
+            }
+        });
+
+        producer.start();
+        consumer.start();
+        producer.join();
+        consumer.join();
+
+        System.out.println("Riya's balance: " + target.getBalance());
+
+        System.out.println("\n--- Deadlock ---");
+
+        Account a = new SavingsAccount("A", 5000, 0);
+        Account b = new SavingsAccount("B", 5000, 0);
+
+        Thread t1 = new Thread(() -> unsafeTransfer(a, b, 100));
+        Thread t2 = new Thread(() -> unsafeTransfer(b, a, 100));
+        t1.setDaemon(true);
+        t2.setDaemon(true);
+        t1.start();
+        t2.start();
+        t1.join(2000);
+        t2.join(2000);
+
+        if (t1.isAlive() && t2.isAlive()) {
+            System.out.println("Deadlock: both threads are stuck waiting for each other");
+        }
+
+        Account c = new SavingsAccount("C", 5000, 0);
+        Account d = new SavingsAccount("D", 5000, 0);
+
+        Thread t3 = new Thread(() -> safeTransfer(c, d, 100));
+        Thread t4 = new Thread(() -> safeTransfer(d, c, 300));
+        t3.start();
+        t4.start();
+        t3.join();
+        t4.join();
+
+        System.out.println("Fixed version finished. C: " + c.getBalance() + ", D: " + d.getBalance());
+    }
+
+    // locks in the order given, so two opposite transfers can deadlock
+    private static void unsafeTransfer(Account from, Account to, long amount) {
+        synchronized (from) {
+            sleep(100);
+            synchronized (to) {
+                move(from, to, amount);
+            }
+        }
+    }
+
+    // always locks the smaller account number first
+    private static void safeTransfer(Account from, Account to, long amount) {
+        Account first = from.getAccountNumber().compareTo(to.getAccountNumber()) < 0 ? from : to;
+        Account second = first == from ? to : from;
+
+        synchronized (first) {
+            sleep(100);
+            synchronized (second) {
+                move(from, to, amount);
+                System.out.println(Thread.currentThread().getName() + " moved " + amount + " from " + from.getOwnerName() + " to " + to.getOwnerName());
+            }
+        }
+    }
+
+    private static void move(Account from, Account to, long amount) {
+        try {
+            from.withdraw(amount);
+            to.deposit(amount);
+        } catch (BankException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }
