@@ -1,17 +1,10 @@
 package model;
 
-import model.annotation.Id;
-
-import java.io.Serializable;
-
-public class Customer implements Cloneable, Serializable
+public class Customer implements Cloneable
 {
-    private static final long serialVersionUID = 1L;
-
     private String name;
     private String email;
     private String mobile;
-    @Id
     private final String customerId;
 
     private Address address;
@@ -24,11 +17,9 @@ public class Customer implements Cloneable, Serializable
         return "CUST" + customerCounter;
     }
 
-    public static class Address implements Serializable
+    public static class Address
     {
-        private static final long serialVersionUID = 1L;
-
-        private String line;
+            private String line;
         private String city;
         private String pincode;
 

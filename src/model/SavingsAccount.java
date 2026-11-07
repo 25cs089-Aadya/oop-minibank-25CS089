@@ -2,8 +2,6 @@ package model;
 
 public class SavingsAccount extends Account
 {
-    private static final long serialVersionUID = 1L;
-
     private long minBalance;
 
     public SavingsAccount(String name, long balance, long minBalance)
@@ -22,12 +20,6 @@ public class SavingsAccount extends Account
     public boolean canWithdraw(long amount)
     {
         return amount > 0 && getBalance() - amount >= minBalance;
-    }
-
-    @Override
-    public long availableBalance()
-    {
-        return getBalance() - minBalance;
     }
 
     public long getMinBalance()

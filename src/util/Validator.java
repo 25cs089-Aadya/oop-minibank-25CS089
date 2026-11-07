@@ -35,9 +35,4 @@ public class Validator
     {
         return ifsc != null && IFSC.matcher(ifsc).matches();
     }
-
-    public static boolean isValidAmount(String amount)
-    {
-        return amount != null && amount.matches("[1-9][0-9]*");
-    }
 }

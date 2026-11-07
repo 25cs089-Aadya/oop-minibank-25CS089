@@ -2,8 +2,6 @@ package model;
 
 public class FixedDepositAccount extends Account implements Premium
 {
-    private static final long serialVersionUID = 1L;
-
     public FixedDepositAccount(String name, long balance)
     {
         super(name, balance);
@@ -19,11 +17,5 @@ public class FixedDepositAccount extends Account implements Premium
     public boolean canWithdraw(long amount)
     {
         return false;
-    }
-
-    @Override
-    public long availableBalance()
-    {
-        return 0;
     }
 }

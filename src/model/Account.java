@@ -1,19 +1,13 @@
 package model;
 
-import exception.BankException;
-import exception.InsufficientFundsException;
-import exception.InvalidAmountException;
 import model.annotation.Id;
 import model.annotation.MaxLength;
 import model.annotation.Positive;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class Account implements Transactable, InterestBearing, Serializable, Comparable<Account>
+public abstract class Account implements Transactable, InterestBearing
 {
-    private static final long serialVersionUID = 1L;
-
     @Id
     private final String accountNumber;
 
@@ -33,17 +27,6 @@ public abstract class Account implements Transactable, InterestBearing, Serializ
         return String.format("AC%04d", accountCounter);
     }
 
-    // after loading saved accounts, continue numbering from the highest one
-    public static void updateCounter(String accountNumber)
-    {
-        long n = Long.parseLong(accountNumber.substring(2));
-
-        if (n > accountCounter)
-        {
-            accountCounter = n;
-        }
-    }
-
     public Account(String ownerName, long openingBalance)
     {
         this.accountNumber = generateAccountNumber();
@@ -61,65 +44,25 @@ public abstract class Account implements Transactable, InterestBearing, Serializ
 
     public abstract boolean canWithdraw(long amount);
 
-    // how much can be taken out right now
-    public long availableBalance()
+    @Override
+    public void deposit(long amount)
     {
-        return balance;
+        if (amount > 0)
+        {
+            balance += amount;
+        }
     }
 
     @Override
-    public synchronized void deposit(long amount) throws InvalidAmountException
+    public boolean withdraw(long amount)
     {
-        if (amount <= 0)
+        if (amount > 0 && canWithdraw(amount))
         {
-            throw new InvalidAmountException(amount);
+            balance -= amount;
+            return true;
         }
 
-        balance += amount;
-    }
-
-    @Override
-    public synchronized boolean withdraw(long amount) throws InsufficientFundsException, InvalidAmountException
-    {
-        if (amount <= 0)
-        {
-            throw new InvalidAmountException(amount);
-        }
-
-        if (!canWithdraw(amount))
-        {
-            throw new InsufficientFundsException(amount - availableBalance());
-        }
-
-        balance -= amount;
-        return true;
-    }
-
-    // not synchronized on purpose, only used to show the race condition
-    public void depositWithoutLock(long amount)
-    {
-        long current = balance;
-        Thread.yield();
-        balance = current + amount;
-    }
-
-    public void transfer(Account to, long amount) throws BankException
-    {
-        try
-        {
-            withdraw(amount);
-            to.deposit(amount);
-            System.out.println("Transferred " + amount + " from " + accountNumber + " to " + to.getAccountNumber());
-        }
-        catch (BankException e)
-        {
-            System.out.println("Transfer failed: " + e.getMessage());
-            throw e;
-        }
-        finally
-        {
-            System.out.println("Transfer attempt finished");
-        }
+        return false;
     }
 
     public String getAccountNumber()
@@ -141,12 +84,6 @@ public abstract class Account implements Transactable, InterestBearing, Serializ
     public boolean isActive()
     {
         return active;
-    }
-
-    @Override
-    public int compareTo(Account other)
-    {
-        return accountNumber.compareTo(other.accountNumber);
     }
 
     @Override

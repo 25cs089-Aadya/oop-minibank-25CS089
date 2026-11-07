@@ -2,8 +2,6 @@ package model;
 
 public class CurrentAccount extends Account
 {
-    private static final long serialVersionUID = 1L;
-
     private long overdraftLimit;
 
     public CurrentAccount(String name, long balance, long overdraftLimit)
@@ -22,12 +20,6 @@ public class CurrentAccount extends Account
     public boolean canWithdraw(long amount)
     {
         return amount > 0 && getBalance() - amount >= -overdraftLimit;
-    }
-
-    @Override
-    public long availableBalance()
-    {
-        return getBalance() + overdraftLimit;
     }
 
     public long getOverdraftLimit()
