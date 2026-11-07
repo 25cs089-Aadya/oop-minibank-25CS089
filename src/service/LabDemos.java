@@ -18,6 +18,7 @@ public class LabDemos {
         if (lab == 0 || lab == 6) testInterfaces();
         if (lab == 0 || lab == 7) testAnnotations();
         if (lab == 0 || lab == 8) testExceptions();
+        if (lab == 0 || lab == 9) testThreads();
     }
 
     public static void testAccounts() throws Exception {
@@ -178,6 +179,35 @@ public class LabDemos {
             other.withdraw(100000);
         } catch (BankException e) {
             System.out.println("Inside try-with-resources: " + e.getMessage());
+        }
+    }
+
+    public static void testThreads() throws InterruptedException {
+        System.out.println("\n--- Threads ---");
+
+        for (int round = 1; round <= 2; round++) {
+            boolean safe = round == 2;
+            Account acc = new SavingsAccount("Aadya", 0, 0);
+            Thread[] threads = new Thread[10];
+
+            System.out.println(safe ? "\nWith synchronization:" : "Without synchronization:");
+
+            for (int i = 0; i < threads.length; i++) {
+                threads[i] = new Thread(new AccountWorker(acc, 1000, 1, safe), "Worker-" + (i + 1));
+            }
+
+            System.out.println("Worker-1 state before start: " + threads[0].getState());
+
+            for (Thread t : threads) {
+                t.start();
+            }
+
+            for (Thread t : threads) {
+                t.join();
+            }
+
+            System.out.println("Worker-1 state after join: " + threads[0].getState());
+            System.out.println("Expected balance: 10000, Actual balance: " + acc.getBalance());
         }
     }
 }
