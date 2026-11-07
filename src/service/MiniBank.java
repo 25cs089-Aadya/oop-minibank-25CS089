@@ -1,4 +1,7 @@
-
+  package service;
+    import model.*;
+  import util.*;
+  import static util.Validator.isValidMobile;
 import java.util.Scanner;
 
 record BankInfo(String name, String branch) {
@@ -75,7 +78,36 @@ public static void testAccounts()
     System.out.println("City: " + customer.getAddress().getCity());
     System.out.println("Cloned Customer: " + copiedCustomer.getName());
 }
+    public static void testInterfaces()
+    {
+        System.out.println("\n--- Interfaces ---");
 
+        Account a1 = new SavingsAccount("Aadya", 5000, 1000);
+        Account a2 = new FixedDepositAccount("Aman", 10000);
+
+        System.out.println("Savings yearly interest: " + a1.yearlyInterest());
+        System.out.println("FD yearly interest: " + a2.yearlyInterest());
+
+        WithdrawRule rule1 = new WithdrawRule()
+        {
+            public boolean allow(Account account, long amount)
+            {
+                return amount <= 2000 && account.canWithdraw(amount);
+            }
+        };
+
+        WithdrawRule rule2 = (account, amount) -> amount <= 2000 && account.canWithdraw(amount);
+
+        System.out.println("Anonymous class: " + rule1.allow(a1, 1500));
+        System.out.println("Lambda: " + rule2.allow(a1, 1500));
+
+        if (a2 instanceof Premium)
+        {
+            System.out.println(a2.getOwnerName() + " has a premium account");
+        }
+
+        System.out.println("Mobile valid: " + isValidMobile("9876543210"));
+    }
     public static void testValidation() {
 
         System.out.println("\n----- Validation Tests -----");
@@ -118,6 +150,7 @@ public static void testAccounts()
 
         testAccounts();
         testValidation();
+        testInterfaces();
 
         Scanner sc = new Scanner(System.in);
 

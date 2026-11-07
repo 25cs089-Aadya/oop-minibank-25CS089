@@ -1,4 +1,5 @@
-
+  package util;
+    import model.*;
 public class CommandParser
 {
     public static Command parse(String line)
