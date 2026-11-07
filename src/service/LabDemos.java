@@ -25,6 +25,7 @@ public class LabDemos {
         if (lab == 0 || lab == 10) testThreadPool();
         if (lab == 0 || lab == 11) testFiles();
         if (lab == 0 || lab == 12) testCollections();
+        if (lab == 0 || lab == 13) testGenerics();
     }
 
     public static void testAccounts() throws Exception {
@@ -396,5 +397,36 @@ public class LabDemos {
         }
 
         System.out.println("History: " + store.getHistory());
+    }
+
+    public static void testGenerics() {
+        System.out.println("\n--- Generics ---");
+
+        Repository<Account> accounts = new Repository<>();
+        Account a1 = new SavingsAccount("Aadya", 5000, 1000);
+        Account a2 = new CurrentAccount("Riya", 2000, 1000);
+        Account a3 = new FixedDepositAccount("Aman", 9000);
+
+        accounts.saveAll(a1, a2, a3);
+
+        System.out.println("Find " + a2.getAccountNumber() + ": " + accounts.findById(a2.getAccountNumber()));
+        System.out.println("All accounts:");
+        for (Account a : accounts.findAll()) {
+            System.out.println(a);
+        }
+
+        Repository<Customer> customers = new Repository<>();
+        Customer c = new Customer("Aadya", "aadya@gmail.com", "9876543210");
+        customers.save(c);
+        System.out.println("Customer found: " + customers.findById(c.getCustomerId()).getName());
+        System.out.println("Customers stored: " + customers.count());
+
+        Integer[] ints = {10, 20, 30};
+        Double[] doubles = {2.5, 3.5};
+        Long[] longs = {5000L, 2000L, 9000L};
+
+        System.out.println("Average of ints: " + Repository.average(ints));
+        System.out.println("Average of doubles: " + Repository.average(doubles));
+        System.out.println("Average balance: " + Repository.average(longs));
     }
 }
