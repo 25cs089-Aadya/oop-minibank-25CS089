@@ -24,6 +24,7 @@ public class LabDemos {
         if (lab == 0 || lab == 9) testThreads();
         if (lab == 0 || lab == 10) testThreadPool();
         if (lab == 0 || lab == 11) testFiles();
+        if (lab == 0 || lab == 12) testCollections();
     }
 
     public static void testAccounts() throws Exception {
@@ -368,5 +369,32 @@ public class LabDemos {
         TransactionLog.append(logs.resolve("day1.log"), "DEPOSIT AC0003 1000");
 
         System.out.println(ReportGenerator.generate(logs, folder.resolve("report.txt")));
+    }
+
+    public static void testCollections() {
+        System.out.println("\n--- Collections ---");
+
+        AccountStore store = new AccountStore();
+        Account a1 = new SavingsAccount("Aadya", 5000, 1000);
+        Account a2 = new CurrentAccount("Riya", 2000, 1000);
+        Account a3 = new FixedDepositAccount("Aman", 9000);
+
+        store.add(a1);
+        store.add(a2);
+        store.add(a3);
+
+        System.out.println("Get " + a2.getAccountNumber() + ": " + store.get(a2.getAccountNumber()));
+
+        System.out.println("Sorted by balance:");
+        for (Account a : store.sortedByBalance()) {
+            System.out.println(a);
+        }
+
+        System.out.println("Balance above 4000:");
+        for (Account a : store.balanceAbove(4000)) {
+            System.out.println(a);
+        }
+
+        System.out.println("History: " + store.getHistory());
     }
 }

@@ -5,8 +5,8 @@ import model.Account;
 import model.Command;
 import model.TransactionType;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class TransactionProcessor
 {
     private ExecutorService pool = Executors.newFixedThreadPool(4);
-    private Map<String, Account> accounts = new HashMap<>();
+    private Map<String, Account> accounts = new ConcurrentHashMap<>();
 
     public void addAccount(Account account)
     {
